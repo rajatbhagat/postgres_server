@@ -13,11 +13,6 @@ def get_database_details():
     return "This call will give us the database details"
 
 
-@client_blueprint.route("/createDatabase")
-def create_database():
-    return "This call will be done to create a database"
-
-
 @client_blueprint.route("/getDatabaseInstanceDetails")
 def get_database_instance_details():
     return "This call will get the database instance details"
