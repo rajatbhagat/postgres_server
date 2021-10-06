@@ -16,3 +16,8 @@ def create_instance():
 @instance_blueprint.route("/getInstanceDetails")
 def get_instance_details():
     return "This call will get the details of the instance."
+
+
+@instance_blueprint.route("/modifyInstanceSettings")
+def get_instance_details():
+    return "This call will modify the instance settings."

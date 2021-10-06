@@ -20,10 +20,7 @@ blueprint = [
     (database_blueprint, DATABASE_API_URL_PREFIX)
 ]
 
-# main driver function
-# if __name__ == '__main__':
-# run() method of Flask class runs the application
-# on the local development server.
+# Registering the different blueprinst with the flask app.
 for blueprint, prefix in blueprint:
     app.register_blueprint(blueprint, url_prefix=prefix)
 

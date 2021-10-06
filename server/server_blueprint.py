@@ -10,4 +10,4 @@ def index():
 
 @server_blueprint.route("/updateCentralDatabase")
 def update_central_database():
-    return "This call will update the central database."
+    return "This call will be used to update the central database."

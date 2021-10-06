@@ -13,6 +13,11 @@ def get_database_details():
     return "This call will give us the database details"
 
 
+@client_blueprint.route("/getConnectionString")
+def get_connection_string(database_name):
+    return "This call will give us the connection string to connect to a database"
+
+
 @client_blueprint.route("/getDatabaseInstanceDetails")
 def get_database_instance_details():
     return "This call will get the database instance details"
@@ -23,3 +28,6 @@ def get_available_space_in_vm():
     return "This call will hit the central repo and get the details of the VM that has space"
 
 
+@client_blueprint.route("/updateCentralDatabase")
+def update_central_database():
+    return "This call will update the central database."
