@@ -4,7 +4,7 @@ instance_blueprint = Blueprint("instance_blueprint", __name__)
 
 
 @instance_blueprint.route("/")
-def index():
+def instance_index():
     return "Default call for the instance apis"
 
 
@@ -19,5 +19,5 @@ def get_instance_details():
 
 
 @instance_blueprint.route("/modifyInstanceSettings")
-def get_instance_details():
+def modify_instance_details():
     return "This call will modify the instance settings."
