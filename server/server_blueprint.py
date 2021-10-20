@@ -4,7 +4,7 @@ server_blueprint = Blueprint("server_blueprint", __name__)
 
 
 @server_blueprint.route("/")
-def index():
+def server_index():
     return "This is the default call for the server API."
 
 
