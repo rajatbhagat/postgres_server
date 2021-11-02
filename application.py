@@ -2,6 +2,7 @@
 # An object of Flask class is our WSGI application.
 import sys
 from flask import Flask
+from flask_cors import CORS
 from client.client_blueprint import client_blueprint
 from postgres_instance.instance_blueprint import instance_blueprint
 from server.server_blueprint import server_blueprint
@@ -12,6 +13,7 @@ from util.blueprint_config import CLIENT_API_URL_PREFIX, SERVER_API_URL_PREFIX, 
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
+CORS(app)
 
 # Collection of the blueprints that need to be registered with the Flask App.
 client_jobs = [
