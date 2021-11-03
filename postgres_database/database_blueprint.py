@@ -22,7 +22,7 @@ def create_database():
         user_exists = cursor.execute(check_user_exists_query)
         print(cursor.fetchall())
         record = cursor.fetchall()
-        if record is None:
+        if not record:
             create_user_query = "create user " + user_name + " with password " + "'dummy_pwd#1234';"
             cursor.execute(create_user_query)
             connection.commit()
