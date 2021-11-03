@@ -17,12 +17,14 @@ def create_database():
     database_name = request.args.get("dbname")
     user_name = request.args.get("username")
     connection = psycopg2.connect("host='localhost' user=postgres password=test")
-    check_user_exists_query = "select 1 from pg_roles where rolename='" + user_name + "';"
+    check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
     with connection.cursor() as cursor:
         user_exists = cursor.execute(check_user_exists_query)
         if not user_exists:
             create_user_query = "create user " + user_name + " with password " + "'dummy_pwd#1234';"
-            cursor.execute(create_user_query);
+            cursor.execute(create_user_query)
+    connection.close()
+    connection = psycopg2.connect("host='localhost' user=postgres password=test")
     database_creation_sql = "create database " + database_name + " owner " + user_name + ";"
     revoke_privileges_for_public = "revoke connect on database " + database_name + " from public"
     connection.autocommit = True
