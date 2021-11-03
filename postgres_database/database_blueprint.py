@@ -33,7 +33,7 @@ def create_database():
         with connection.cursor() as cursor:
             cursor.execute(database_creation_sql)
             cursor.execute(revoke_privileges_for_public)
-            cursor.commit()
+            # connection.commit()
             return {"host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name, "password": "dummy_pwd#1234"}
     except Exception as e:
         return "Exception while creating database : " + e.__str__()
