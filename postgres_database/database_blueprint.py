@@ -23,6 +23,7 @@ def create_database():
         if not user_exists:
             create_user_query = "create user " + user_name + " with password " + "'dummy_pwd#1234';"
             cursor.execute(create_user_query)
+            cursor.commit()
     connection.close()
     connection = psycopg2.connect("host='localhost' user=postgres password=test")
     database_creation_sql = "create database " + database_name + " owner " + user_name + ";"
@@ -32,6 +33,7 @@ def create_database():
         with connection.cursor() as cursor:
             cursor.execute(database_creation_sql)
             cursor.execute(revoke_privileges_for_public)
+            cursor.commit()
             return {"host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name, "password": "dummy_pwd#1234"}
     except Exception as e:
         return "Exception while creating database : " + e.__str__()
