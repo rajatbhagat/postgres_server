@@ -15,7 +15,7 @@ def database_index():
 def create_database():
     # url/createDatabase?dbname=<dbname>&uname=<username>
     database_name = request.args.get("dbname")
-    user_name = request.args.get("username")
+    user_name = request.args.get("uname")
     connection = psycopg2.connect("host='localhost' user=postgres password=test")
     check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
     with connection.cursor() as cursor:
