@@ -20,6 +20,7 @@ def create_database():
     check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
     with connection.cursor() as cursor:
         user_exists = cursor.execute(check_user_exists_query)
+        print(user_exists)
         if not user_exists:
             create_user_query = "create user " + user_name + " with password " + "'dummy_pwd#1234';"
             cursor.execute(create_user_query)
