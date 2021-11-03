@@ -37,7 +37,7 @@ else:
 # Registering the different blueprints with the flask app.
 
 if instance_type == "" or instance_type is None:
-    blueprint_to_be_loaded = client_jobs
+    blueprint_to_be_loaded = server_jobs
 
 for blueprint_option, prefix in blueprint_to_be_loaded:
     app.register_blueprint(blueprint_option, url_prefix=prefix)
