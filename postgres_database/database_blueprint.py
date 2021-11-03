@@ -23,7 +23,7 @@ def create_database():
         if not user_exists:
             create_user_query = "create user " + user_name + " with password " + "'dummy_pwd#1234';"
             cursor.execute(create_user_query)
-            cursor.commit()
+            connection.commit()
     connection.close()
     connection = psycopg2.connect("host='localhost' user=postgres password=test")
     database_creation_sql = "create database " + database_name + " owner " + user_name + ";"
