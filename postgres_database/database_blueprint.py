@@ -55,6 +55,40 @@ def drop_database():
         return "Exception while dropping database : " + e.__str__()
 
 
+@database_blueprint.route("/dropDatabaseByOwner")
+def drop_database_by_owner():
+    database_name = request.args.get("dbname")
+    user_name = request.args.get("uname")
+    connection = psycopg2.connect("host='localhost' user=postgres password=test")
+    connection.autocommit = True
+    # collect db owner information
+    check_db_owner_query = 'SELECT d.datname as "Name", pg_catalog.pg_get_userbyid(d.datdba) as "Owner" FROM pg_catalog.pg_database d WHERE d.datname = '+ "'" + database_name + "'" +' ORDER BY 1;'
+    owners = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(check_db_owner_query)
+            record = cursor.fetchall()
+            for n in record:
+                owners.append(n)          
+    except Exception as e:
+        return "Exception while getting owner information of a db: " + e.__str__()
+    
+    # if username match db owner, drop db
+    for row in owners:
+        owner = row[1]
+        if user_name == owner:
+            database_deletion_sql = "drop database " + database_name + ";"
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(database_deletion_sql)
+                    return "Database dropped Successfully"
+            except Exception as e:
+                return "Exception while dropping database : " + e.__str__()
+    connection.close()
+    return "user is not the database owner"
+    
+    
+
 @database_blueprint.route("/modifySettings")
 def modify_database_settings():
     return "This call will help the user modify the settings of the database."
