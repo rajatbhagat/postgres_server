@@ -5,7 +5,6 @@ from psycopg2.extras import LogicalReplicationConnection
 
 database_blueprint = Blueprint("database_blueprint", __name__)
 
-
 @database_blueprint.route("/")
 def database_index():
     return "Default route for database."
@@ -23,7 +22,7 @@ def create_database():
         record = cursor.fetchall()
         print(record)
         if not record:
-            create_user_query = "create user " + user_name + " with password " + "'dummy_pwd#1234';"
+            create_user_query = "create user " + user_name + " with password " + "'dummy_pwd1234';"
             cursor.execute(create_user_query)
             connection.commit()
     connection.close()
@@ -36,7 +35,7 @@ def create_database():
             cursor.execute(database_creation_sql)
             cursor.execute(revoke_privileges_for_public)
             # connection.commit()
-            return {"host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name, "password": "dummy_pwd#1234"}
+            return {"host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name, "password": "dummy_pwd1234"}
     except Exception as e:
         return "Exception while creating database : " + e.__str__()
 
@@ -56,10 +55,13 @@ def drop_database():
 
 
 @database_blueprint.route("/dropDatabaseByOwner")
+# url/dropDatabaseByOwner?dbname=<dbname>&uname=<username>
 def drop_database_by_owner():
     database_name = request.args.get("dbname")
     user_name = request.args.get("uname")
-    connection = psycopg2.connect("host='localhost' user=postgres password=test")
+    pwd = request.args.get("pwd")
+    conn_str = "host='localhost' user=" + user_name+ " password=" + pwd + " dbname=" + database_name
+    connection = psycopg2.connect(conn_str)
     connection.autocommit = True
     # collect db owner information
     check_db_owner_query = 'SELECT d.datname as "Name", pg_catalog.pg_get_userbyid(d.datdba) as "Owner" FROM pg_catalog.pg_database d WHERE d.datname = '+ "'" + database_name + "'" +' ORDER BY 1;'
@@ -86,7 +88,6 @@ def drop_database_by_owner():
                 return "Exception while dropping database : " + e.__str__()
     connection.close()
     return "user is not the database owner"
-    
     
 
 @database_blueprint.route("/modifySettings")
