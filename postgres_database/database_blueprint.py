@@ -39,6 +39,17 @@ def create_database():
     except Exception as e:
         return "Exception while creating database : " + e.__str__()
 
+# not committed yet
+@database_blueprint.route("/connectDB")
+def connect_database():
+    database_name = request.args.get("dbname")
+    user_name = request.args.get("uname")
+    pwd = request.args.get("pwd")
+    try:
+        connection = psycopg2.connect(host='localhost', dbname = database_name,user=user_name, password=pwd)
+    except Exception as e:
+        return "connection failed" + e.__str__()
+    return "connection established"
 
 @database_blueprint.route("/dropDatabase")
 def drop_database():
@@ -60,8 +71,9 @@ def drop_database_by_owner():
     database_name = request.args.get("dbname")
     user_name = request.args.get("uname")
     pwd = request.args.get("pwd")
-    conn_str = "host='localhost' user=" + user_name+ " password=" + pwd + " dbname=" + database_name
-    connection = psycopg2.connect(conn_str)
+    verify_user(database_name, user_name, pwd)
+
+    connection = psycopg2.connect("host='localhost' user=postgres password=test")
     connection.autocommit = True
     # collect db owner information
     check_db_owner_query = 'SELECT d.datname as "Name", pg_catalog.pg_get_userbyid(d.datdba) as "Owner" FROM pg_catalog.pg_database d WHERE d.datname = '+ "'" + database_name + "'" +' ORDER BY 1;'
@@ -89,6 +101,24 @@ def drop_database_by_owner():
     connection.close()
     return "user is not the database owner"
     
+def verify_user(database_name, user_name, pwd):
+    conn_str = "host='localhost' user=" + user_name+ " password=" + pwd + " dbname=" + database_name
+    try:
+        connection = psycopg2.connect(conn_str)
+        connection.close()
+        return "user access privilege verified"
+    except Exception as e:
+        return "Exception while verify user credentials" + e.__str__()
+
+@database_blueprint.route("/accessDB")
+# url/dropDatabaseByOwner?dbname=<dbname>&uname=<username>
+def access_database():
+    database_name = request.args.get("dbname")
+    user_name = request.args.get("uname")
+    pwd = request.args.get("pwd")
+    res = verify_user(database_name, user_name, pwd)
+    return res
+
 
 @database_blueprint.route("/modifySettings")
 def modify_database_settings():
