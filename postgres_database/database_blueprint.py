@@ -66,13 +66,14 @@ def drop_database():
 
 
 @database_blueprint.route("/dropDatabaseByOwner")
-# url/dropDatabaseByOwner?dbname=<dbname>&uname=<username>
+# url/dropDatabaseByOwner?dbname=<dbname>&uname=<username>&pwd=<pwd>
 def drop_database_by_owner():
     database_name = request.args.get("dbname")
     user_name = request.args.get("uname")
     pwd = request.args.get("pwd")
-    verify_user(database_name, user_name, pwd)
-
+    res = verify_user(database_name, user_name, pwd)
+    if res != "success":
+        return "Can not verify user credentials to the database"
     connection = psycopg2.connect("host='localhost' user=postgres password=test")
     connection.autocommit = True
     # collect db owner information
@@ -106,18 +107,18 @@ def verify_user(database_name, user_name, pwd):
     try:
         connection = psycopg2.connect(conn_str)
         connection.close()
-        return "user access privilege verified"
+        return "success"
     except Exception as e:
         return "Exception while verify user credentials" + e.__str__()
 
 @database_blueprint.route("/accessDB")
-# url/dropDatabaseByOwner?dbname=<dbname>&uname=<username>
+# url/accessDB?dbname=<dbname>&uname=<username>&pwd=<pwd>
 def access_database():
     database_name = request.args.get("dbname")
     user_name = request.args.get("uname")
     pwd = request.args.get("pwd")
     res = verify_user(database_name, user_name, pwd)
-    return res
+    return {"res": res, "host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name, "password": pwd}
 
 
 @database_blueprint.route("/modifySettings")
