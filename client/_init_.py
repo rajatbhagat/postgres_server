@@ -9,7 +9,7 @@ header = ['VM', 'IsAlive', 'Space']
 with open('central_repository.csv', 'w', encoding='UTF8', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(header)
-HOST_UP = False if os.system("ping -c 1 " + "128.31.26.151") != 0 else True
+HOST_UP = False if os.system("ping -c 1 " + "10.0.0.17") != 0 else True
 print(HOST_UP)
 #for instance in client.
 #    print(instance.name)
