@@ -27,7 +27,7 @@ with open('central_repository.csv', 'w', encoding='UTF8', newline='') as f:
         elif i == 3:
             ip = "10.0.0.17"
         HOST_UP = False if os.system("ping -c 1 " + ip) != 0 else True
-        row = {'ID': i + 1, 'IsAlive': HOST_UP, 'Space': "unknown"}
+        row = {'ID': i + 1, 'VM': ip, 'IsAlive': HOST_UP, 'Space': "unknown"}
         writer.writerow(row)
     readData = [row for row in csv.DictReader(f)]
     print(readData)
