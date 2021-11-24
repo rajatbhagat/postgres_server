@@ -43,4 +43,4 @@ for blueprint_option, prefix in blueprint_to_be_loaded:
     app.register_blueprint(blueprint_option, url_prefix=prefix)
 
 if __name__ == '__main__':
-    app.run(host="10.0.0.220", port=5000)
+    app.run(host="10.0.0.220", port=8080)
