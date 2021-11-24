@@ -2,7 +2,7 @@ import csv
 # import novaclient
 # from novaclient import client
 import os
-header = ['VM', 'IsAlive', 'Space']
+header = ['ID', 'VM', 'IsAlive', 'Space']
 # import psycopg2
 # from psycopg2.extras import LogicalReplicationConnection
 
@@ -14,7 +14,6 @@ HOST_UP = False if os.system("ping -c 1 " + "10.0.0.220") != 0 else True
 HOST_UP = False if os.system("ping -c 1 " + "10.0.0.125") != 0 else True
 HOST_UP = False if os.system("ping -c 1 " + "192.168.100.66") != 0 else True
 HOST_UP = False if os.system("ping -c 1 " + "10.0.0.17") != 0 else True
-
 print(HOST_UP)
 #for instance in client.
 #    print(instance.name)
