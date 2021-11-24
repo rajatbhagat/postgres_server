@@ -29,6 +29,7 @@ with open('central_repository.csv', 'w', encoding='UTF8', newline='') as f:
         HOST_UP = False if os.system("ping -c 1 " + ip) != 0 else True
         row = {'ID': i + 1, 'VM': ip, 'IsAlive': HOST_UP, 'Space': "unknown"}
         writer.writerow(row)
+with open('central_repository.csv', 'r', encoding='UTF8', newline='') as f:
     readData = [row for row in csv.reader(f)]
     print(readData)
 
