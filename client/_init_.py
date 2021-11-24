@@ -28,6 +28,9 @@ for i in range(4):
     HOST_UP = False if os.system("ping -c 1 " + ip) != 0 else True
     row = {'ID': i + 1, 'IsAlive': HOST_UP, 'Space': "unknown"}
     writer.writerow(row)
+    readData = [row for row in csv.DictReader(f)]
+    print(readData)
+
 #for instance in client.
 #    print(instance.name)
 #    print(instance.addresses)
