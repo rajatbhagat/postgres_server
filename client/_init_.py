@@ -2,6 +2,7 @@ import csv
 # import novaclient
 # from novaclient import client
 import os
+import schedule
 
 # import psycopg2
 # from psycopg2.extras import LogicalReplicationConnection
@@ -13,6 +14,7 @@ header = ['ID', 'VM', 'IsAlive', 'Space']
 
 
 def update_central_repo():
+    print("yolo")
     with open('central_repository.csv', 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(header)
@@ -41,13 +43,20 @@ def update_central_repo():
         readData = [row for row in csv.reader(f)]
         print(readData)
 
+schedule.every(15).seconds.do(update_central_repo)
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=update_central_repo, trigger="interval", seconds=15)
-scheduler.start()
+while True:
+    # Checks whether a scheduled task
+    # is pending to run or not
+    schedule.run_pending()
+    time.sleep(1)
 
-# Shut down the scheduler when exiting the app
-atexit.register(lambda: scheduler.shutdown())
+# scheduler = BackgroundScheduler(timezone="America/New_York")
+# scheduler.add_job(func=update_central_repo, trigger="interval", seconds=15)
+# scheduler.start()
+#
+# # Shut down the scheduler when exiting the app
+# atexit.register(lambda: scheduler.shutdown())
 
 # for instance in client.
 #    print(instance.name)
