@@ -47,7 +47,7 @@ def update_central_database():
         HOST_UP = False if os.system("ping -c 1 " + ip) != 0 else True
         row = {'ID': i + 1, 'IsAlive': HOST_UP, 'Space': "unknown"}
         writer.writerow(row)
-    return "This call will update the central database."
+    return True
 
 @client_blueprint.route("/getcsv")
 def get_csv():
