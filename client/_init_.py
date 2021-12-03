@@ -43,7 +43,7 @@ def update_central_repo():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=update_central_repo(), trigger="interval", seconds=60)
+scheduler.add_job(func=update_central_repo, trigger="interval", seconds=60)
 scheduler.start()
 
 # Shut down the scheduler when exiting the app
