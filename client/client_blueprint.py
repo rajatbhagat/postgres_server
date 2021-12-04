@@ -2,11 +2,12 @@ from flask import Blueprint
 from flask_restx import Api, Resource
 import csv
 import os
+import pandas
 
 client_blueprint = Blueprint("client_blueprint", __name__)
 client_api = Api(client_blueprint)
 
-client_namespcae = client_api.namespace("client");
+client_namespcae = client_api.namespace("client")
 
 
 @client_namespcae.route("/")
@@ -61,6 +62,7 @@ class UpdateCentralRepository(Resource):
         return True
 
 
-@client_blueprint.route("/getcsv")
-def get_csv():
-    return "This call will hit the central repo and get the details of the VM that has space"
+@client_namespcae.route("/getCentralRepositoryDetails/<string:inputParameter>&<string:parameterType>")
+class GetCentralRepositoryDetails(Resource):
+    def get(self, inputParameter, paramterType):
+        return "This call will hit the central repo and get the details of the VM that has space"

@@ -16,7 +16,7 @@ class CreateDatabase(Resource):
         # user_name = request.args.get("uname")
         database_name = dbname
         user_name = uname
-        connection = psycopg2.connect("host='localhost' user=postgres password=test")
+        connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
         check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
         with connection.cursor() as cursor:
             user_exists = cursor.execute(check_user_exists_query)
@@ -27,7 +27,7 @@ class CreateDatabase(Resource):
                 cursor.execute(create_user_query)
                 connection.commit()
         connection.close()
-        connection = psycopg2.connect("host='localhost' user=postgres password=test")
+        connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
         database_creation_sql = "create database " + database_name + " owner " + user_name + ";"
         revoke_privileges_for_public = "revoke connect on database " + database_name + " from public"
         connection.autocommit = True
@@ -64,7 +64,7 @@ class DropDatabase(Resource):
     def post(self, dbname):
         # database_name = request.args.get("dbname")
         database_name = dbname
-        connection = psycopg2.connect("host='localhost' user=postgres password=test")
+        connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
         connection.autocommit = True
         database_deletion_sql = "drop database " + database_name + ";"
         try:
@@ -88,7 +88,7 @@ class DropDatabaseByOwner(Resource):
         res = verify_user(database_name, user_name, pwd)
         if res != "success":
             return "Can not verify user credentials to the database"
-        connection = psycopg2.connect("host='localhost' user=postgres password=test")
+        connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
         connection.autocommit = True
         # collect db owner information
         check_db_owner_query = 'SELECT d.datname as "Name", pg_catalog.pg_get_userbyid(d.datdba) as "Owner" FROM pg_catalog.pg_database d WHERE d.datname = ' + "'" + database_name + "'" + ' ORDER BY 1;'
@@ -154,7 +154,7 @@ class GetDatabaseSize(Resource):
         # url/getSize?dbname=<dbname>
         # database_name = request.args.get("dbname")
         database_name = dbname
-        connection = psycopg2.connect("host='localhost' user=postgres password=test")
+        connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
         database_size_sql = "SELECT pg_size_pretty( pg_database_size('" + database_name + "') );"
         connection.autocommit = True
         try:
@@ -172,7 +172,7 @@ class GetDatabaseStats(Resource):
         # url/getStats?dbname=<dbname>
         # database_name = request.args.get("dbname")
         database_name = dbname
-        connection = psycopg2.connect("host='localhost' user=postgres password=test")
+        connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
         database_size_sql = "SELECT * FROM pg_stat_database WHERE datname = '" + database_name + "';"
         connection.autocommit = True
         try:
@@ -192,7 +192,7 @@ class UpdateReadAccess(Resource):
         # user_name = request.args.get("uname")
         database_name = dbname
         user_name = uname
-        connection = psycopg2.connect("host='localhost' user=postgres password=test")
+        connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
         check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
         with connection.cursor() as cursor:
             cursor.execute(check_user_exists_query)
@@ -203,7 +203,7 @@ class UpdateReadAccess(Resource):
                 cursor.execute(create_user_query)
                 connection.commit()
             connection.close()
-            connection = psycopg2.connect("host='localhost' user=postgres password=test")
+            connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
             grant_connect_and_read_to_user = "grant connect on database " + database_name + " to " + user_name + ";"
             # connection.autocommit = True
             try:
