@@ -2,6 +2,8 @@ from flask import Blueprint
 import psycopg2
 from flask_restx import Api, Resource
 
+from util.utils import add_entry_to_db_repo, update_active_flag_db_repo, check_db_exists
+
 database_blueprint = Blueprint("database_blueprint", __name__)
 database_api = Api(database_blueprint)
 
@@ -16,6 +18,8 @@ class CreateDatabase(Resource):
         # user_name = request.args.get("uname")
         database_name = dbname
         user_name = uname
+        if check_db_exists(dbname, user_name):
+            return "Database with " + dbname + "exists."
         connection = psycopg2.connect("host='localhost' user=postgres password=test")
         check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
         with connection.cursor() as cursor:
@@ -36,6 +40,7 @@ class CreateDatabase(Resource):
                 cursor.execute(database_creation_sql)
                 cursor.execute(revoke_privileges_for_public)
                 # connection.commit()
+                add_entry_to_db_repo(database_name, "128.31.27.249", user_name, 'Active', 'RW')
                 return {"host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name,
                         "password": "dummy_pwd1234"}
         except Exception as e:
@@ -70,6 +75,7 @@ class DropDatabase(Resource):
         try:
             with connection.cursor() as cursor:
                 cursor.execute(database_deletion_sql)
+                update_active_flag_db_repo(dbname, 'Inactive')
                 return "Database dropped Successfully"
         except Exception as e:
             return "Exception while dropping database : " + e.__str__()
