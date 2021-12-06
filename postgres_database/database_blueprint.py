@@ -231,7 +231,7 @@ class UpdateReadAccess(Resource):
         user_name = request.json['uname']
         db_vm = get_vm_details(database_name)
         if db_vm is not None:
-            connection = psycopg2.connect("host='"+db_vm+"' user=postgres password=test")
+            connection = psycopg2.connect("host='"+db_vm+"' user=postgres password=postgres")
             check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
             with connection.cursor() as cursor:
                 cursor.execute(check_user_exists_query)
