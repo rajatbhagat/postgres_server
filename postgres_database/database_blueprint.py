@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 import psycopg2
 from flask_restx import Api, Resource
 
@@ -10,16 +10,17 @@ database_api = Api(database_blueprint)
 database_namespace = database_api.namespace("database")
 
 
-@database_namespace.route("/createDatabase/<string:dbname>&<string:uname>")
+@database_namespace.route("/createDatabase")
+# /createDatabase/<string:dbname>&<string:uname>
 class CreateDatabase(Resource):
-    def post(self, dbname, uname):
+    def post(self):
         # url/createDatabase?dbname=<dbname>&uname=<username>
         # database_name = request.args.get("dbname")
         # user_name = request.args.get("uname")
-        database_name = dbname
-        user_name = uname
-        if check_db_exists(dbname, user_name):
-            return "Database with " + dbname + "exists."
+        database_name = request.json['dbname']
+        user_name = request.json['uname']
+        if check_db_exists(database_name, user_name):
+            return "Database with " + database_name + "exists."
         connection = psycopg2.connect("host='localhost' user=postgres password=test")
         check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
         with connection.cursor() as cursor:
@@ -64,33 +65,36 @@ class ConnectDB(Resource):
         return "connection established"
 
 
-@database_namespace.route("/dropDatabase/<string:dbname>")
+@database_namespace.route("/dropDatabase")
+# /dropDatabase/<string:dbname>
 class DropDatabase(Resource):
-    def post(self, dbname):
+    def post(self):
         # database_name = request.args.get("dbname")
-        database_name = dbname
+        #database_name = dbname
+        database_name = request.json['dbname']
         connection = psycopg2.connect("host='localhost' user=postgres password=test")
         connection.autocommit = True
         database_deletion_sql = "drop database " + database_name + ";"
         try:
             with connection.cursor() as cursor:
                 cursor.execute(database_deletion_sql)
-                update_active_flag_db_repo(dbname, 'Inactive')
+                update_active_flag_db_repo(database_name, 'Inactive')
                 return "Database dropped Successfully"
         except Exception as e:
             return "Exception while dropping database : " + e.__str__()
 
 
-@database_namespace.route("/dropDatabaseByOwner/<string:dbname>&<string:uname>&<string:pwd>")
+@database_namespace.route("/dropDatabaseByOwner")
 # url/dropDatabaseByOwner?dbname=<dbname>&uname=<username>&pwd=<pwd>
+# "/dropDatabaseByOwner/<string:dbname>&<string:uname>&<string:pwd>"
 class DropDatabaseByOwner(Resource):
-    def post(self, dbname, uname, pwd):
+    def post(self):
         # database_name = request.args.get("dbname")
         # user_name = request.args.get("uname")
         # pwd = request.args.get("pwd")
-        database_name = dbname
-        user_name = uname
-        pwd = pwd
+        database_name = request.json['dbname']
+        user_name = request.json['uname']
+        pwd = request.json['pwd']
         res = verify_user(database_name, user_name, pwd)
         if res != "success":
             return "Can not verify user credentials to the database"
@@ -133,16 +137,17 @@ def verify_user(database_name, user_name, pwd):
         return "Exception while verify user credentials" + e.__str__()
 
 
-@database_namespace.route("/accessDB/<string:dbname>&<string:uname>&<string:pwd>")
+@database_namespace.route("/accessDB")
+# /accessDB/<string:dbname>&<string:uname>&<string:pwd>
 # url/accessDB?dbname=<dbname>&uname=<username>&pwd=<pwd>
 class AccessDatabase(Resource):
-    def post(self, dbname, uname, pwd):
+    def post(self):
         # database_name = request.args.get("dbname")
         # user_name = request.args.get("uname")
         # pwd = request.args.get("pwd")
-        database_name = dbname
-        user_name = uname
-        pwd = pwd
+        database_name = request.json['dbname']
+        user_name = request.json['uname']
+        pwd = request.json['pwd']
         res = verify_user(database_name, user_name, pwd)
         return {"res": res, "host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name,
                 "password": pwd}
@@ -190,14 +195,15 @@ class GetDatabaseStats(Resource):
             return "Exception while getting database size: " + e.__str__()
 
 
-@database_namespace.route("/updateReadStatus/<string:dbname>&<string:uname>")
+@database_namespace.route("/updateReadStatus")
+# /updateReadStatus/<string:dbname>&<string:uname>
 class UpdateReadAccess(Resource):
-    def post(self, dbname, uname):
+    def post(self):
         # url/createDatabase?dbname=<dbname>&uname=<username>
         # database_name = request.args.get("dbname")
         # user_name = request.args.get("uname")
-        database_name = dbname
-        user_name = uname
+        database_name = request.json['dbname']
+        user_name = request.json['uname']
         connection = psycopg2.connect("host='localhost' user=postgres password=test")
         check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
         with connection.cursor() as cursor:
