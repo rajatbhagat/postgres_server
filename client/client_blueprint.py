@@ -67,6 +67,7 @@ class UpdateCentralRepository(Resource):
         return True
 
 
-@client_blueprint.route("/getcsv")
-def get_csv():
-    return "This call will hit the central repo and get the details of the VM that has space"
+@client_namespcae.route("/getCentralRepositoryDetails/<string:inputParameter>&<string:parameterType>")
+class GetCentralRepositoryDetails(Resource):
+    def get(self, inputParameter, paramterType):
+        return "This call will hit the central repo and get the details of the VM that has space"

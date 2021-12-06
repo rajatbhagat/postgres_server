@@ -16,28 +16,28 @@ app = Flask(__name__)
 CORS(app)
 
 # Collection of the blueprints that need to be registered with the Flask App.
-client_jobs = [
-    (client_blueprint, CLIENT_API_URL_PREFIX),
-    (instance_blueprint, INSTANCE_API_URL_PREFIX)
-]
+# client_jobs = [
+#     (instance_blueprint, INSTANCE_API_URL_PREFIX)
+# ]
 
 server_jobs = [
+    (client_blueprint, CLIENT_API_URL_PREFIX),
     (instance_blueprint, INSTANCE_API_URL_PREFIX),
     (server_blueprint, SERVER_API_URL_PREFIX),
     (database_blueprint, DATABASE_API_URL_PREFIX)
 ]
 
 instance_type = sys.argv[0]
-blueprint_to_be_loaded = []
-if instance_type == "client":
-    blueprint_to_be_loaded = client_jobs
-else:
-    blueprint_to_be_loaded = server_jobs
+blueprint_to_be_loaded = server_jobs
+# if instance_type == "client":
+#     blueprint_to_be_loaded = client_jobs
+# else:
+#     blueprint_to_be_loaded = server_jobs
 
 # Registering the different blueprints with the flask app.
 
-if instance_type == "" or instance_type is None:
-    blueprint_to_be_loaded = server_jobs
+# if instance_type == "" or instance_type is None:
+#     blueprint_to_be_loaded = server_jobs
 
 for blueprint_option, prefix in blueprint_to_be_loaded:
     app.register_blueprint(blueprint_option, url_prefix=prefix)
