@@ -23,7 +23,7 @@ class CreateDatabase(Resource):
         if check_db_exists(database_name, user_name):
             return "Database with " + database_name + "exists."
         host = check_available_space()
-        connection = psycopg2.connect('host='+host+' user=postgres password=test')
+        connection = psycopg2.connect('host='+host+' user=postgres password=postgres')
         check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
         with connection.cursor() as cursor:
             user_exists = cursor.execute(check_user_exists_query)
@@ -138,13 +138,17 @@ class DropDatabaseByOwner(Resource):
 
 
 def verify_user(database_name, user_name, pwd):
-    conn_str = "host='localhost' user=" + user_name + " password=" + pwd + " dbname=" + database_name
-    try:
-        connection = psycopg2.connect(conn_str)
-        connection.close()
-        return "success"
-    except Exception as e:
-        return "Exception while verify user credentials" + e.__str__()
+    db_vm = get_vm_details(database_name)
+    if db_vm is not None:
+        conn_str = "host='"+db_vm+"' user=" + user_name + " password=" + pwd + " dbname=" + database_name
+        try:
+            connection = psycopg2.connect(conn_str)
+            connection.close()
+            return "success"
+        except Exception as e:
+            return "Exception while verify user credentials" + e.__str__()
+    else:
+        return None
 
 
 @database_namespace.route("/accessDB")
@@ -159,8 +163,12 @@ class AccessDatabase(Resource):
         user_name = request.json['uname']
         pwd = request.json['pwd']
         res = verify_user(database_name, user_name, pwd)
-        return {"res": res, "host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name,
-                "password": pwd}
+        if res == "success":
+            return {"res": res, "host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name,
+                    "password": pwd}
+        else:
+            return {"res": "error", "host": "error", "port": "error", "database": "error", "username": "error",
+                    "password": "error"}
 
 
 @database_namespace.route("/modifySettings")
@@ -234,7 +242,7 @@ class UpdateReadAccess(Resource):
                     cursor.execute(create_user_query)
                     connection.commit()
                 connection.close()
-                connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
+                connection = psycopg2.connect("host='"+db_vm+"' user=postgres password=postgres")
                 grant_connect_and_read_to_user = "grant connect on database " + database_name + " to " + user_name + ";"
                 # connection.autocommit = True
                 try:
