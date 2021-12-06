@@ -2,11 +2,12 @@ from flask import Blueprint
 from flask_restx import Api, Resource
 import csv
 import os
+import pandas as pd
 
 client_blueprint = Blueprint("client_blueprint", __name__)
 client_api = Api(client_blueprint)
 
-client_namespcae = client_api.namespace("client");
+client_namespcae = client_api.namespace("client")
 
 
 @client_namespcae.route("/")
@@ -33,16 +34,21 @@ class DatabaseInstanceDetails(Resource):
         return "This call will get the database instance details"
 
 
-@client_namespcae.route("/getAvailablSpaceInVm")
-class AvailablSpaceInVM(Resource):
-    def get(self):
-        return "This call will hit the central repo and get the details of the VM that has space"
+@client_namespcae.route("/getAvailableSpaceInVm")
+class AvailableSpaceInVM(Resource):
+    def get(self, VM):
+        df = pd.read_csv('../central_repository.csv')
+        if df.loc[df['VM'] == VM, 'IsAlive']:
+            return df.loc[df['VM'] == VM, 'Space']
+        else:
+            return 'VM is not alive'
+        # return "This call will hit the central repo and get the details of the VM that has space"
 
 
 @client_namespcae.route("/updateCentralDatabase")
 class UpdateCentralRepository(Resource):
     def post(self):
-        with open('central_repository.csv', 'w', encoding='UTF8', newline='') as f:
+        with open('db_repository.csv', 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
         header = ['ID', 'VM', 'IsAlive', 'Space']
         writer = csv.DictWriter(f, fieldnames=header)
@@ -61,6 +67,7 @@ class UpdateCentralRepository(Resource):
         return True
 
 
-@client_blueprint.route("/getcsv")
-def get_csv():
-    return "This call will hit the central repo and get the details of the VM that has space"
+@client_namespcae.route("/getCentralRepositoryDetails/<string:inputParameter>&<string:parameterType>")
+class GetCentralRepositoryDetails(Resource):
+    def get(self, inputParameter, paramterType):
+        return "This call will hit the central repo and get the details of the VM that has space"

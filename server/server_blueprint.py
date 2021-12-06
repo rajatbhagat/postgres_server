@@ -6,6 +6,7 @@ server_api = Api(server_blueprint)
 
 server_namespace = server_api.namespace("server")
 
+
 @server_namespace.route("/")
 class ServerIndex(Resource):
     @server_namespace.doc("get")

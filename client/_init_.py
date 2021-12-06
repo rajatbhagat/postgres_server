@@ -15,7 +15,7 @@ header = ['ID', 'VM', 'IsAlive', 'Space']
 
 def update_central_repo():
     print("yolo")
-    with open('central_repository.csv', 'w', encoding='UTF8', newline='') as f:
+    with open('db_repository.csv', 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(header)
 
@@ -39,9 +39,10 @@ def update_central_repo():
             row = {'ID': i + 1, 'VM': ip, 'IsAlive': HOST_UP, 'Space': "unknown"}
             writer.writerow(row)
 
-    with open('central_repository.csv', 'r', encoding='UTF8', newline='') as f:
+    with open('db_repository.csv', 'r', encoding='UTF8', newline='') as f:
         readData = [row for row in csv.reader(f)]
         print(readData)
+
 
 schedule.every(15).seconds.do(update_central_repo)
 
