@@ -2,7 +2,8 @@ from flask import Blueprint, request
 import psycopg2
 from flask_restx import Api, Resource
 
-from util.utils import add_entry_to_db_repo, update_active_flag_db_repo, check_db_exists, get_vm_details
+from util.utils import add_entry_to_db_repo, update_active_flag_db_repo, check_db_exists, get_vm_details, \
+    check_available_space
 
 database_blueprint = Blueprint("database_blueprint", __name__)
 database_api = Api(database_blueprint)
@@ -21,7 +22,8 @@ class CreateDatabase(Resource):
         user_name = request.json['uname']
         if check_db_exists(database_name, user_name):
             return "Database with " + database_name + "exists."
-        connection = psycopg2.connect("host='localhost' user=postgres password=test")
+        host = check_available_space()
+        connection = psycopg2.connect('host='+host+' user=postgres password=test')
         check_user_exists_query = "select 1 from pg_roles where pg_roles.rolname='" + user_name + "';"
         with connection.cursor() as cursor:
             user_exists = cursor.execute(check_user_exists_query)
@@ -32,7 +34,7 @@ class CreateDatabase(Resource):
                 cursor.execute(create_user_query)
                 connection.commit()
         connection.close()
-        connection = psycopg2.connect("host='localhost' user=postgres password=postgres")
+        connection = psycopg2.connect('host='+host+' user=postgres password=postgres')
         database_creation_sql = "create database " + database_name + " owner " + user_name + ";"
         revoke_privileges_for_public = "revoke connect on database " + database_name + " from public"
         connection.autocommit = True
