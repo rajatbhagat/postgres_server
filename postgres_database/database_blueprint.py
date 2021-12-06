@@ -43,8 +43,8 @@ class CreateDatabase(Resource):
                 cursor.execute(database_creation_sql)
                 cursor.execute(revoke_privileges_for_public)
                 # connection.commit()
-                add_entry_to_db_repo(database_name, "128.31.27.249", user_name, 'Active', 'RW')
-                return {"host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name,
+                add_entry_to_db_repo(database_name, host, user_name, 'Active', 'RW')
+                return {"host": host, "port": 5432, "database": database_name, "username": user_name,
                         "password": "dummy_pwd1234"}
         except Exception as e:
             return "Exception while creating database : " + e.__str__()
@@ -249,7 +249,7 @@ class UpdateReadAccess(Resource):
                     with connection.cursor() as cursor:
                         cursor.execute(grant_connect_and_read_to_user)
                         connection.commit()
-                        return {"host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name,
+                        return {"host": db_vm, "port": 5432, "database": database_name, "username": user_name,
                                 "password": "dummy_pwd#1234"}
                 except Exception as e:
                     return "Exception while creating database : " + e.__str__()
