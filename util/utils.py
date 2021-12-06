@@ -14,14 +14,14 @@ def add_entry_to_db_repo(dbName, VM, Owner, Status, AccessType):
 
 
 def update_active_flag_db_repo(dbName, status):
-    df = pd.read_csv('../db_repository.csv')
+    df = pd.read_csv('./db_repository.csv')
     df.loc[df['dbName'] == dbName, 'Status'] = status
     # print(df)
     df.to_csv('db_repository.csv', index=False)
 
 
 def check_db_exists(dbName, username):
-    df = pd.read_csv('../db_repository.csv')
+    df = pd.read_csv('./db_repository.csv')
     if ((df['dbName'] == dbName) & (df['Owner'] == username)).any():
         # print(df.loc[df['dbName'] == dbName, 'Status'][0])
         if df.loc[df['dbName'] == dbName, 'Status'][0] == 'Active':
@@ -33,7 +33,7 @@ def check_db_exists(dbName, username):
 
 
 def get_vm_details(dbName):
-    df = pd.read_csv('./db_repository.csv')
+    df = pd.read_csv('../db_repository.csv')
     if dbName in df['dbName'].values.tolist():
         return df.loc[df['dbName'] == dbName, 'VM'][0]
     else:
