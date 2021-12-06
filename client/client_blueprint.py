@@ -7,7 +7,7 @@ import pandas as pd
 client_blueprint = Blueprint("client_blueprint", __name__)
 client_api = Api(client_blueprint)
 
-client_namespcae = client_api.namespace("client");
+client_namespcae = client_api.namespace("client")
 
 
 @client_namespcae.route("/")
