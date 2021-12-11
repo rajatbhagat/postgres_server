@@ -54,11 +54,11 @@ class UpdateCentralRepositoryPoller(Resource):
         print(res)
         with open('db_repository_poller.csv', 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
-        header = ['ID','VM', 'IsAlive', 'TYPE']
-        writer = csv.DictWriter(f, fieldnames=header)
-        HOST_UP = False if os.system("ping -c 1 " + ip) != 0 else True
-        row = {'ID': int(id), 'VM': ip,'IsAlive': HOST_UP, 'TYPE':type}
-        writer.writerow(row)
+            header = ['ID','VM', 'IsAlive', 'TYPE']
+            writer = csv.DictWriter(f, fieldnames=header)
+            HOST_UP = False if os.system("ping -c 1 " + ip) != 0 else True
+            row = {'ID': int(id), 'VM': ip,'IsAlive': HOST_UP, 'TYPE':type}
+            writer.writerow(row)
         return res
 
 
