@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_restx import Api, Resource
 import csv
 import os
@@ -43,6 +43,23 @@ class AvailableSpaceInVM(Resource):
         else:
             return 'VM is not alive'
         # return "This call will hit the central repo and get the details of the VM that has space"
+
+@client_namespcae.route("/updateCentralDatabasePoller")
+class UpdateCentralRepositoryPoller(Resource):
+    def post(self):
+        id = request.json['id']
+        ip = request.json['ip']
+        type = request.json['type']
+        res = "ip: " + ip + ", type: " + type
+        print(res)
+        with open('db_repository_poller.csv', 'w', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+        header = ['ID','VM', 'IsAlive', 'TYPE']
+        writer = csv.DictWriter(f, fieldnames=header)
+        HOST_UP = False if os.system("ping -c 1 " + ip) != 0 else True
+        row = {'ID': int(id), 'VM': ip,'IsAlive': HOST_UP, 'TYPE':type}
+        writer.writerow(row)
+        return res
 
 
 @client_namespcae.route("/updateCentralDatabase")
