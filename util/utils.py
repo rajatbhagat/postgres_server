@@ -52,9 +52,9 @@ def check_available_space():
 
 
 def update_type(VM, type):
-    df = pd.read_csv('../central_repository.csv')
+    df = pd.read_csv('./central_repository.csv')
     df.loc[df['VM'] == VM, 'Type'] = type
-    df.to_csv('../central_repository.csv', index=False)
+    df.to_csv('./central_repository.csv', index=False)
 
 
 # update_type('10.0.0.17', 'master')
