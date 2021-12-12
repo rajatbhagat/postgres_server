@@ -3,36 +3,40 @@ import psycopg2
 from time import sleep
 import requests
 import socket
-import sys
 
-#SERVER_IP="128.31.25.198"
 URL="http://128.31.25.198:5000/client/client/updateCentralDatabasePoller"
 PORT=5000
-ID=1
 INTERVAL=3.0
-type = "slave"
+CONN_STR = "host=localhost user=postgres password=postgres"
 
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-    try:
-        sock.connect(("8.8.8.8", 80))
-        ip = sock.getsockname()[0]
-    except:
-        print("Could not detect local IP. Exiting.")
-        sys.exit(1)
-# data={'type':type, 'ip':ip}
+def get_ip():
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        try:
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+        except:
+            return "error"
 
-conn_str = "host=localhost user=postgres password=postgres"
-
-while True:
-    conn = psycopg2.connect(conn_str)
+def get_type():
+    conn = psycopg2.connect(CONN_STR)
     cur = conn.cursor()
     cur.execute("SELECT pg_is_in_recovery();")
     result= cur.fetchall()[0][0]
     if result is False:
-        type="master"
+        conn.close()
+        return "master"
+    elif result is True:
+        conn.close()
+        return "slave"
     conn.close()
-    #print(type)
-    data={'type':type, 'ip':ip, 'id':ID}
-    res = requests.post(URL, json=data)
-    print(res)
-    sleep(INTERVAL)
+    return "error"
+    
+
+if __name__ == "__main__":
+    ip = get_ip()
+    while True:
+        type=get_type()
+        data={'type':type, 'ip':ip}
+        res = requests.post(URL, json=data)
+        print(res)
+        sleep(INTERVAL)

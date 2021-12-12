@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from flask_restx import Api, Resource
+from flask_restx import Api, Resource, reqparse
 import csv
 import os
 import pandas as pd
@@ -11,6 +11,9 @@ client_api = Api(client_blueprint)
 
 client_namespcae = client_api.namespace("client")
 
+parser = reqparse.RequestParser()
+parser.add_argument('ip')
+parser.add_argument('type')
 
 @client_namespcae.route("/")
 class ClientIndex(Resource):
@@ -46,12 +49,16 @@ class AvailableSpaceInVM(Resource):
             return 'VM is not alive'
         # return "This call will hit the central repo and get the details of the VM that has space"
 
+
 @client_namespcae.route("/updateCentralDatabasePoller")
 class UpdateCentralRepositoryPoller(Resource):
+    @client_namespcae.doc(parser=parser)
     def post(self):
-        id = request.json['id']
-        ip = request.json['ip']
-        type = request.json['type']
+        # ip = request.json['ip']
+        # type = request.json['type']
+        args = parser.parse_args()
+        ip = args['ip']
+        type = args['type']
         res = "ip: " + ip + ", type: " + type
         print(res)
         update_type(ip, type)
