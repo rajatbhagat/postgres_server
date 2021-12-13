@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 import psycopg2
-from flask_restx import Api, Resource
+from flask_restx import Api, Resource, reqparse
 
 from util.utils import add_entry_to_db_repo, update_active_flag_db_repo, check_db_exists, get_vm_details, \
     check_available_space
@@ -10,16 +10,25 @@ database_api = Api(database_blueprint)
 
 database_namespace = database_api.namespace("database")
 
+# Define parser and request args
+parser = reqparse.RequestParser()
+parser.add_argument('dbname', type=str, required=True, location='json')
+parser.add_argument('uname', type=str, required=True, location='json')
+# not the type=dict
+parser.add_argument('pwd', type=str, required=True, location='json')
+args = parser.args
+
 
 @database_namespace.route("/createDatabase")
 # /createDatabase/<string:dbname>&<string:uname>
 class CreateDatabase(Resource):
+    @database_namespace.expect(parser)
     def post(self):
         # url/createDatabase?dbname=<dbname>&uname=<username>
-        # database_name = request.args.get("dbname")
-        # user_name = request.args.get("uname")
-        database_name = request.json['dbname']
-        user_name = request.json['uname']
+        # database_name = request.json['dbname']
+        # user_name = request.json['uname']
+        database_name = parser.parse_args()["dbname"]
+        user_name = parser.parse_args()["uname"]
         if check_db_exists(database_name, user_name):
             return "Database with " + database_name + "exists."
         host = check_available_space()
@@ -72,10 +81,12 @@ class ConnectDB(Resource):
 @database_namespace.route("/dropDatabase")
 # /dropDatabase/<string:dbname>
 class DropDatabase(Resource):
+    @database_namespace.expect(parser)
     def post(self):
         # database_name = request.args.get("dbname")
         #database_name = dbname
-        database_name = request.json['dbname']
+        database_name = parser.parse_args()["dbname"]
+        # database_name = request.json['dbname']
         db_vm = get_vm_details(database_name)
         if db_vm is not None:
             connection = psycopg2.connect("host='"+ db_vm + "' user=postgres password=test")
@@ -95,13 +106,17 @@ class DropDatabase(Resource):
 # url/dropDatabaseByOwner?dbname=<dbname>&uname=<username>&pwd=<pwd>
 # "/dropDatabaseByOwner/<string:dbname>&<string:uname>&<string:pwd>"
 class DropDatabaseByOwner(Resource):
+    @database_namespace.expect(parser)
     def post(self):
         # database_name = request.args.get("dbname")
         # user_name = request.args.get("uname")
         # pwd = request.args.get("pwd")
-        database_name = request.json['dbname']
-        user_name = request.json['uname']
-        pwd = request.json['pwd']
+        # database_name = request.json['dbname']
+        # user_name = request.json['uname']
+        # pwd = request.json['pwd']
+        database_name = parser.parse_args()["dbname"]
+        user_name = parser.parse_args()["uname"]
+        pwd = parser.parse_args()['pwd']
         res = verify_user(database_name, user_name, pwd)
         if res != "success":
             return "Can not verify user credentials to the database"
@@ -155,13 +170,17 @@ def verify_user(database_name, user_name, pwd):
 # /accessDB/<string:dbname>&<string:uname>&<string:pwd>
 # url/accessDB?dbname=<dbname>&uname=<username>&pwd=<pwd>
 class AccessDatabase(Resource):
+    @database_namespace.expect(parser)
     def post(self):
         # database_name = request.args.get("dbname")
         # user_name = request.args.get("uname")
         # pwd = request.args.get("pwd")
-        database_name = request.json['dbname']
-        user_name = request.json['uname']
-        pwd = request.json['pwd']
+        # database_name = request.json['dbname']
+        # user_name = request.json['uname']
+        # pwd = request.json['pwd']
+        database_name = parser.parse_args()["dbname"]
+        user_name = parser.parse_args()["uname"]
+        pwd = parser.parse_args()['pwd']
         res = verify_user(database_name, user_name, pwd)
         if res == "success":
             return {"res": res, "host": "128.31.27.249", "port": 5432, "database": database_name, "username": user_name,
@@ -169,12 +188,6 @@ class AccessDatabase(Resource):
         else:
             return {"res": "error", "host": "error", "port": "error", "database": "error", "username": "error",
                     "password": "error"}
-
-
-@database_namespace.route("/modifySettings")
-class ModifyDatabaseSettings(Resource):
-    def post(self):
-        return "This call will help the user modify the settings of the database."
 
 
 @database_namespace.route("/getSize/<string:dbname>")
@@ -223,12 +236,16 @@ class GetDatabaseStats(Resource):
 @database_namespace.route("/updateReadStatus")
 # /updateReadStatus/<string:dbname>&<string:uname>
 class UpdateReadAccess(Resource):
+    @database_namespace.expect(parser)
     def post(self):
         # url/createDatabase?dbname=<dbname>&uname=<username>
         # database_name = request.args.get("dbname")
         # user_name = request.args.get("uname")
-        database_name = request.json['dbname']
-        user_name = request.json['uname']
+        # database_name = request.json['dbname']
+        # user_name = request.json['uname']
+        database_name = parser.parse_args()["dbname"]
+        user_name = parser.parse_args()["uname"]
+        # pwd = parser.parse_args()['pwd']
         db_vm = get_vm_details(database_name)
         if db_vm is not None:
             connection = psycopg2.connect("host='"+db_vm+"' user=postgres password=postgres")
