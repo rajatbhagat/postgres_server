@@ -1,14 +1,19 @@
-from flask import Blueprint
-from flask_restx import Api, Resource
+from flask import Blueprint, request
+from flask_restx import Api, Resource, reqparse
 import csv
 import os
 import pandas as pd
+
+from util.utils import update_type
 
 client_blueprint = Blueprint("client_blueprint", __name__)
 client_api = Api(client_blueprint)
 
 client_namespcae = client_api.namespace("client")
 
+parser = reqparse.RequestParser()
+parser.add_argument('ip')
+parser.add_argument('type')
 
 @client_namespcae.route("/")
 class ClientIndex(Resource):
@@ -43,6 +48,28 @@ class AvailableSpaceInVM(Resource):
         else:
             return 'VM is not alive'
         # return "This call will hit the central repo and get the details of the VM that has space"
+
+
+@client_namespcae.route("/updateCentralDatabasePoller")
+class UpdateCentralRepositoryPoller(Resource):
+    @client_namespcae.doc(parser=parser)
+    def post(self):
+        # ip = request.json['ip']
+        # type = request.json['type']
+        args = parser.parse_args()
+        ip = args['ip']
+        type = args['type']
+        res = "ip: " + ip + ", type: " + type
+        print(res)
+        update_type(ip, type)
+        # with open('db_repository_poller.csv', 'w', encoding='UTF8', newline='') as f:
+        #     writer = csv.writer(f)
+        #     header = ['ID','VM', 'IsAlive', 'TYPE']
+        #     writer = csv.DictWriter(f, fieldnames=header)
+        #     HOST_UP = False if os.system("ping -c 1 " + ip) != 0 else True
+        #     row = {'ID': int(id), 'VM': ip,'IsAlive': HOST_UP, 'TYPE':type}
+        #     writer.writerow(row)
+        return res
 
 
 @client_namespcae.route("/updateCentralDatabase")
