@@ -35,7 +35,7 @@ def check_db_exists(dbName, username):
 def get_vm_details(dbName):
     df = pd.read_csv('./db_repository.csv')
     if dbName in df['dbName'].values.tolist():
-        return df.loc[df['dbName'] == dbName, 'VM'][0]
+        return list(df.loc[df['dbName'] == dbName, 'VM'])[0]
     else:
         return None
 
