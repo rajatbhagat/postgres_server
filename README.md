@@ -63,7 +63,7 @@ The technology stack that we used for implementation are as follows:
 * Frontend: React.js
 * Backend: Flask
 * PostgreSQL Database Adapter: Psycopg
-* Auto Postgres Fail Over Management Tool: Repmgr, Keepalived
+* Auto Postgres Fail Over Management Tool: Repmgr, Repmgrd, Keepalived
 * API Testing: Swagger API
 
 ### Design
