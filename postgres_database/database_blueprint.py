@@ -14,8 +14,7 @@ database_namespace = database_api.namespace("database")
 parser = reqparse.RequestParser()
 parser.add_argument('dbname', type=str, required=True, location='json')
 parser.add_argument('uname', type=str, required=True, location='json')
-# not the type=dict
-parser.add_argument('pwd', type=str, required=True, location='json')
+parser.add_argument('pwd', type=str, required=False, location='json')
 args = parser.args
 
 
