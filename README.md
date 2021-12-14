@@ -164,3 +164,15 @@ Follow the below mentioned steps :
 
 ### Setup of Poller Script On Database VM
 
+`poller.py` is the stand alone poller script that should be deployed on the VMs that host Postgres Server. 
+
+1. Deploy poller script to a remote server
+
+After you cloned the repository, in the root directory of this repository, use `scp -i \{path to your ssh key\} poller.py \{server user name\}@\{server ip address\}:/home/\{server user name\}` command to copy the `poller.py` to your remote server. 
+
+2. Run poller script
+
+If there is no python3 installed on your server, run `sudo yum install python3` first to install python3. 
+
+Use the command `python3 poller.py` to run the poller script.
+
